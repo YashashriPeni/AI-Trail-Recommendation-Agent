@@ -1,0 +1,264 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        -176
+      ],
+      "id": "855b280e-bad2-45ae-addd-df9b0eaffcb8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are an autonomous Trail Recommendation Assistant.\n\nWhen executed:\n\n1. Use the weather tool to retrieve current weather conditions.\n2. Use the trail list tool to retrieve available hiking trails.\n3. Analyze the weather and trail information.\n4. Select the trail that best matches the current weather conditions.\n5. Generate a trail recommendation including:\n   - Trail name\n   - Distance\n   - Elevation gain\n   - Estimated hiking time\n   - Current weather\n   - Reason for recommendation\n\nUse the Gmail tool to send the recommendation email.\n\nDo not ask questions.\nDo not wait for user input.\nAlways use the available tools when needed.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        96,
+        -176
+      ],
+      "id": "4d556152-31a7-4f36-a8a2-fde52a60025e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        48
+      ],
+      "id": "bae9948f-3082-4d4b-aca3-84bbebab367a",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "OWXQ7WtdsMgfqK70",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "yashuppt@gmail.com",
+          "mode": "list",
+          "cachedResultName": "yashuppt@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        48
+      ],
+      "id": "78b6edcc-8fc3-45b1-9d71-33b5000aaf23",
+      "name": "Check calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "oJl6IIfEY37jmrwI",
+          "name": "Google Calendar OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to get the current weather for any city or location.\nAlways use this tool when the user asks about weather, temperature, rain, wind, forecast, climate, or outdoor conditions.",
+        "format": "imperial",
+        "cityName": "draper, US"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        224,
+        48
+      ],
+      "id": "a443a5b4-728b-4181-b724-2e6fbae63328",
+      "name": "Get Weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "RBhojSoUaKGr4p5G",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19DjL9JhsJcvEGfWn192FaRxfGQhFligAV7jGrsi4usM",
+          "mode": "list",
+          "cachedResultName": "Trials",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19DjL9JhsJcvEGfWn192FaRxfGQhFligAV7jGrsi4usM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 123456789,
+          "mode": "list",
+          "cachedResultName": "Runs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19DjL9JhsJcvEGfWn192FaRxfGQhFligAV7jGrsi4usM/edit#gid=123456789"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        48
+      ],
+      "id": "49faf7eb-3436-4893-ad3e-f12a469fbc89",
+      "name": "Get trial list",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZVmtngmPmK9PAMJu",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Send an email containing the selected trail recommendation, current weather summary, trail distance, elevation gain, estimated hiking time, and reason for recommendation.",
+        "sendTo": "pangusnehitha@gmail.com",
+        "subject": "Trial recommendation for today",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Send an email containing the complete trail recommendation.\n\nThe email body must include:\n\n- Trail name\n- Distance\n- Elevation gain\n- Estimated hiking time\n- Current weather conditions\n- Reason for recommendation\n\nGenerate a professional and friendly email.\n\nDo not leave the message body empty.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -32
+      ],
+      "id": "92b83971-13a4-44a1-97e0-448d673d8bd8",
+      "name": "Send a message in Gmail",
+      "webhookId": "efc8b003-36d5-4d84-beea-ef5ef8d573ac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ro91cA1m7MQvbHkh",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 14
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        64
+      ],
+      "id": "23872ff1-4808-4b7d-8972-5aace2e6a139",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get trial list": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "48a547e5-e628-447d-938f-e5cec86ea315",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a524a4b9a13f90b2df0c4a6750825b936c8cb28a84070366b3eb9e93d28c0576"
+  },
+  "id": "iHBS1ApVRI0nZRIL",
+  "tags": []
+}
